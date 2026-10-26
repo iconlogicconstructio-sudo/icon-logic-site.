@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B1B3A">
+<meta name="robots" content="noindex">
+<title>Report an issue - ICON Logic</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#06101f;color:#fff}
+.hero{background:#0B1B3A;padding:22px 18px 22px;text-align:center;border-bottom:3px solid #D4A937}
+.back{display:block;text-align:left;color:#D4A937;text-decoration:none;font-size:14px;margin-bottom:10px}
+h1{margin:0;font-size:26px}
+h1 span{color:#D4A937}
+.hero p{margin:6px 0 0;color:#cbd5e1;font-size:14px}
+main{max-width:520px;margin:0 auto;padding:16px 18px 40px}
+label{display:block;margin:16px 0 6px;font-size:14px;color:#D4A937}
+input,select,textarea{width:100%;padding:12px;font-size:16px;color:#fff;background:#0f2347;border:1px solid #2a4375;border-radius:10px;font-family:inherit}
+textarea{min-height:100px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#D4A937}
+button{width:100%;margin-top:22px;padding:14px;font-size:16px;font-weight:bold;background:#D4A937;color:#0B1B3A;border:none;border-radius:10px}
+button:disabled{opacity:.6}
+#msg{margin-top:16px;padding:12px;border-radius:10px;font-size:15px;display:none}
+#msg.ok{display:block;background:#0f3b2a;border:1px solid #2e8b57}
+#msg.err{display:block;background:#4a1a1a;border:1px solid #c0392b}
+</style>
+</head>
+<body>
+<div class="hero"><a class="back" href="site.html">&larr; Control centre</a><h1>Report an <span>issue</span></h1><p>Delays, shortages and site problems</p></div>
+<main>
+<form id="f">
+<label>Project ID</label>
+<select name="project" required><option value="">Choose project</option><option>PRJ-0001</option><option>PRJ-0002</option></select>
+<label>Reported by</label>
+<input name="by" required placeholder="Your full name">
+<label>Category</label>
+<select name="category" required><option value="">Choose category</option><option>Delay</option><option>Material shortage</option><option>Design query</option><option>Labour</option><option>Equipment</option><option>Weather</option><option>Payment</option><option>Other</option></select>
+<label>Priority</label>
+<select name="priority" required><option value="">Choose priority</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+<label>Location on site (optional)</label>
+<input name="location" placeholder="Block A, ground floor">
+<label>Describe the issue</label>
+<textarea name="description" required placeholder="What happened, and what is needed?"></textarea>
+<label>Person responsible</label>
+<input name="owner" required placeholder="Name of the person who must act">
+<label>Due date</label>
+<input type="date" name="due" required>
+<button id="b" type="submit">Submit issue</button>
+<div id="msg"></div>
+</form>
+</main>
+<script>
+var URL_="https://script.google.com/macros/s/AKfycbytLbBJDSMY5zbR4zv133zm1mJUT5QhnKMYCkK5Kakl0yegt6qI3vkrY8oTvpgpvb9d/exec";
+var CODE="icon2026x";
+var f=document.getElementById("f"),b=document.getElementById("b"),m=document.getElementById("msg");
+f.addEventListener("submit",function(e){
+e.preventDefault();
+b.disabled=true;b.textContent="Sending...";m.className="";m.textContent="";
+var d=Object.fromEntries(new FormData(f).entries());
+d.code=CODE;
+fetch(URL_,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)})
+.then(function(r){return r.json();})
+.then(function(j){
+if(j.ok){m.className="ok";m.textContent="Issue recorded. Reference: "+j.id;f.reset();}
+else{m.className="err";m.textContent="Not saved: "+j.error;}
+})
+.catch(function(){m.className="err";m.textContent="Could not send. Check your internet and try again.";})
+.then(function(){b.disabled=false;b.textContent="Submit issue";});
+});
+</script>
+</body>
+</html>
